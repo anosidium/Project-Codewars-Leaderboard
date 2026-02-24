@@ -8,17 +8,30 @@
     <script src="index.mjs" type="module"></script>
   </head>
   <body>
-    <h1>Codewars Leaderboard</h1>
-    <label for="usernames">Usernames:</label>
-    <input type="text" name="usernames" placeholder="e.g. SallyMcGrath, CodeYourFuture, 40thieves, ..." required />
-    <input type="submit" value="Submit" />
-    <select>
-      <option>No Selection</option>
-    </select>
-    <div>
-      <div>Username</div>
-      <div>Clan</div>
-      <div>Score</div>
-    </div>
+    <main>
+      <h1>Codewars Leaderboard</h1>
+
+      <form id="leaderboard-form">
+        <label for="usernames">Usernames:</label>
+        <input id="usernames" type="text" name="usernames" placeholder="e.g. SallyMcGrath, CodeYourFuture, 40thieves" required />
+        <button type="submit">Submit</button>
+      </form>
+
+      <label for="ranking-select">Ranking:</label>
+      <select id="ranking-select">
+        <option value="">Select ranking</option>
+      </select>
+
+      <table id="leaderboard-table">
+        <thead>
+          <tr>
+            <th scope="col">Username</th>
+            <th scope="col">Clan</th>
+            <th scope="col">Score</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </main>
   </body>
 </html>
