@@ -1,0 +1,56 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 2rem;
+}
+
+h1 {
+    margin-bottom: 1.5rem;
+}
+
+/* Form layout */
+form {
+    margin-bottom: 1rem;
+}
+
+label {
+    margin-right: 0.5rem;
+}
+
+input[type="text"] {
+    width: 500px;
+    max-width: 100%;
+    padding: 0.4rem;
+}
+
+button {
+    padding: 0.4rem 0.8rem;
+}
+
+select {
+    margin: 1rem 0;
+    padding: 0.4rem;
+}
+
+/* Table styling */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    border: 1px solid #ccc;
+    padding: 0.5rem;
+}
+
+th {
+    text-align: left;
+    background-color: #f0f0f0;
+}
+
+/* Highlight top row */
+
+tbody tr:first-child {
+    font-weight: bold;
+}
