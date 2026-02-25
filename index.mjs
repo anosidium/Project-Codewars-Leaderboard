@@ -85,6 +85,7 @@ function extractRankingCategories(users) {
 function configureSelect(categories) {
   const select = document.querySelector("#ranking-select");
   select.innerHTML = "";
+  select.disabled = false;
 
   categories.forEach((category) => {
     const option = document.createElement("option");
