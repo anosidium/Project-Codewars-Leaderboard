@@ -10,24 +10,62 @@
 import test from "node:test";
 import assert from "node:assert";
 import nock from "nock";
-import { makeFetchRequest } from "./index.mjs";
+import { fetchUsers } from "./index.mjs";
 
-test("mocks a fetch function", async () => {
-  // Create a fetch request "mock" using the nock library, which "replaces"
-  // real requests with fake ones that we can control in the test using nock
-  // functions.
-  // In this example, we set up nock so that it looks for GET requests to
-  // https://example.com/test (no other URLs will work) and responds with a 200
-  // HTTP status code, and the body {"user": "someone"}.
-  const scope = nock("https://example.com").get("/test").reply(200, JSON.stringify({ user: "someone" }));
+const BASE_URL = "https://www.codewars.com";
 
-  // Check that the response we got back included the fake body we set up.
-  const response = await makeFetchRequest();
-  const parsedResponse = await response.json();
-  assert(parsedResponse.user === "someone");
+test("fetchUsers returns a valid user when API responds with 200", async () => {
+  const mockUser = {
+    username: "ValidUser",
+    clan: "TestClan",
+    ranks: {
+      overall: { score: 100 },
+      languages: {},
+    },
+  };
 
-  // Ensure that a fetch request has been replaced by the nock library. This
-  // helps ensure that you're not making real fetch requests that don't match
-  // the nock configuration.
-  assert(scope.isDone() === true, "No matching fetch request has been made");
+  const scope = nock(BASE_URL).get("/api/v1/users/ValidUser").reply(200, mockUser);
+
+  const result = await fetchUsers(["ValidUser"]);
+
+  assert.strictEqual(result.validUsers.length, 1);
+  assert.strictEqual(result.invalidUsers.length, 0);
+  assert.strictEqual(result.validUsers[0].username, "ValidUser");
+
+  assert(scope.isDone(), "Expected API call was not made");
+});
+
+test("fetchUsers classifies 404 user as invalid", async () => {
+  const scope = nock(BASE_URL).get("/api/v1/users/UnknownUser").reply(404);
+
+  const result = await fetchUsers(["UnknownUser"]);
+
+  assert.strictEqual(result.validUsers.length, 0);
+  assert.strictEqual(result.invalidUsers.length, 1);
+  assert.strictEqual(result.invalidUsers[0], "UnknownUser");
+
+  assert(scope.isDone(), "Expected API call was not made");
+});
+
+test("fetchUsers separates valid and invalid users correctly", async () => {
+  const validUser = {
+    username: "ValidUser",
+    clan: null,
+    ranks: {
+      overall: { score: 50 },
+      languages: {},
+    },
+  };
+
+  const scope = nock(BASE_URL).get("/api/v1/users/ValidUser").reply(200, validUser).get("/api/v1/users/BadUser").reply(404);
+
+  const result = await fetchUsers(["ValidUser", "BadUser"]);
+
+  assert.strictEqual(result.validUsers.length, 1);
+  assert.strictEqual(result.invalidUsers.length, 1);
+
+  assert.strictEqual(result.validUsers[0].username, "ValidUser");
+  assert.strictEqual(result.invalidUsers[0], "BadUser");
+
+  assert(scope.isDone(), "Not all mocked endpoints were called");
 });

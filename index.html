@@ -1,13 +1,39 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Codewars leaderboard</title>
-</head>
-<body>
-  
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Codewars leaderboard</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="index.mjs" type="module"></script>
+  </head>
+  <body>
+    <main>
+      <h1>Codewars Leaderboard</h1>
 
-<script src="index.mjs" type="module"></script>
+      <form id="leaderboard-form">
+        <label for="usernames">Usernames:</label>
+        <input id="usernames" type="text" name="usernames" placeholder="e.g. SallyMcGrath, CodeYourFuture, 40thieves" required />
+        <button type="submit">Submit</button>
+      </form>
+
+      <p id="error-message" role="alert"></p>
+
+      <label for="ranking-select">Ranking:</label>
+      <select id="ranking-select" disabled>
+        <option value="">Select ranking</option>
+      </select>
+
+      <table id="leaderboard-table">
+        <thead>
+          <tr>
+            <th scope="col">Username</th>
+            <th scope="col">Clan</th>
+            <th scope="col">Score</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </main>
+  </body>
 </html>
