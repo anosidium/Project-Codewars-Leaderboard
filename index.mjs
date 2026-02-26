@@ -57,7 +57,7 @@ function extractUsernames(rawInput) {
  * @param {string[]} usernames
  * @returns {Promise<{ validUsers: Object[], invalidUsers: string[] }>}
  */
-async function fetchUsers(usernames) {
+export async function fetchUsers(usernames) {
   const userEndpoint = "https://www.codewars.com/api/v1/users/";
 
   const results = await Promise.all(
@@ -193,7 +193,9 @@ function clearError() {
   document.querySelector("#error-message").textContent = "";
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.querySelector("#leaderboard-form");
-  form.addEventListener("submit", handleSubmit);
-});
+if (typeof document !== "undefined") {
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.querySelector("#leaderboard-form");
+    form.addEventListener("submit", handleSubmit);
+  });
+}
