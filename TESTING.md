@@ -1,27 +1,39 @@
 - **Rubric:** The website must contain an input to accept a comma-separated list of users
   - **How Tested:** Enter `SallyMcGrath, CodeYourFuture, 40thieves` in the textfield and click Submit. The users are processed.
+
 - **Rubric:** Submitting the list of users fetches data from the Codewars API about each user
   - **How Tested:** Enter the same usernames and observe that the leaderboard table displays the fetched overall rankings.
+
 - **Rubric:** A drop-down is shown, allowing the user to pick from all possible language rankings plus the overall ranking
   - **How Tested:** Using the same usernames, the dropdown menu displays `overall, javascript, sql, typescript, go, ruby`.
+
 - **Rubric:** The default ranking selected is the overall ranking
   - **How Tested:** After submitting usernames, the dropdown defaults to `overall`.
+
 - **Rubric:** A table is shown for the current ranking, with columns for each user’s username, clan and score
   - **How Tested:** The table on the webpage displays three columns: Username, Clan and Score.
+
 - **Rubric:** Changing the selected ranking updates the table to reflect the newly selected ranking
   - **How Tested:** Select a different language from the dropdown and observe the table updating accordingly.
+
 - **Rubric:** The table is sorted from highest to lowest score, top to bottom
   - **How Tested:** Observe the Score column; rows are sorted in descending order.
+
 - **Rubric:** Users without a ranking in a chosen language are not shown in that table
   - **How Tested:** For example, changing the ranking to `sql` hides `40thieves` because that user has no SQL entries.
+
 - **Rubric:** The top user’s score is visually highlighted
   - **How Tested:** The top row uses bold font and a yellow background; other rows remain normal.
+
 - **Rubric:** The website must score 100 for accessibility in Lighthouse
   - **How Tested:** Run Lighthouse in Chrome; the Accessibility score is 100.
+
 - **Rubric:** Unit tests must be written for at least one non-trivial function
   - **How Tested:** Three tests verify `fetchUsers` handles valid users, invalid users and mixed cases.
+
 - **Rubric:** Searching for a user which doesn’t exist should show a message to the user explaining this
   - **How Tested:** Enter a nonexistent username like `454354353`; message displays: “No valid users found.”
     - Enter `SallyMcGrath, CodeYourFuture, 40thieves, 454354353`; message displays: “Invalid users: 454354353”.
+
 - **Rubric:** If fetching from the Codewars API errors (e.g., offline or bad request), the user must be shown a useful error message in the UI
   - **How Tested:** Disconnect from the internet, submit valid usernames; message displays: “You are offline. Please check your internet connection.”
