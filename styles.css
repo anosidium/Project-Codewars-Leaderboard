@@ -56,5 +56,6 @@ th {
 /* Highlight top row */
 
 tbody tr:first-child {
+    background-color: #fff3cd;
     font-weight: bold;
 }
