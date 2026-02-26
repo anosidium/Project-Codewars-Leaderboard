@@ -4,24 +4,38 @@
 // works.
 
 /**
- * Handles form submission event.
+ * Handles form submission.
  *
  * @param {SubmitEvent} event
  */
 async function handleSubmit(event) {
   event.preventDefault();
 
+  clearError();
+
+  if (!navigator.onLine) {
+    showError("You are offline. Please check your internet connection.");
+    return;
+  }
+
   const input = document.querySelector("#usernames");
   const usernames = extractUsernames(input.value);
 
   if (usernames.length === 0) return;
 
-  const users = await fetchUsers(usernames);
+  const { validUsers, invalidUsers } = await fetchUsers(usernames);
 
-  const categories = extractRankingCategories(users);
-  configureSelect(categories);
+  if (validUsers.length === 0) {
+    showError("No valid users found.");
+    return;
+  }
 
-  renderTable(users, "overall");
+  if (invalidUsers.length > 0) {
+    showError(`Invalid users: ${invalidUsers.join(", ")}`);
+  }
+
+  configureSelect(validUsers);
+  renderTable(validUsers, "overall");
 }
 
 /**
@@ -38,25 +52,43 @@ function extractUsernames(rawInput) {
 }
 
 /**
- * Fetches Codewars user data for each username.
+ * Fetches users and separates valid and invalid usernames.
  *
  * @param {string[]} usernames
- * @returns {Promise<Object[]>} Array of user objects
+ * @returns {Promise<{ validUsers: Object[], invalidUsers: string[] }>}
  */
 async function fetchUsers(usernames) {
   const userEndpoint = "https://www.codewars.com/api/v1/users/";
 
-  const requests = usernames.map((username) =>
-    fetch(`${userEndpoint}${username}`).then((response) => {
-      if (!response.ok) {
-        throw new Error(`User not found: ${username}`);
-      }
+  const results = await Promise.all(
+    usernames.map(async (username) => {
+      try {
+        const response = await fetch(`${userEndpoint}${username}`);
 
-      return response.json();
+        if (!response.ok) {
+          return { username, error: true };
+        }
+
+        const json = await response.json();
+        return { data: json };
+      } catch {
+        return { username, error: true };
+      }
     }),
   );
 
-  return Promise.all(requests);
+  const validUsers = [];
+  const invalidUsers = [];
+
+  results.forEach((result) => {
+    if (result.error) {
+      invalidUsers.push(result.username);
+    } else {
+      validUsers.push(result.data);
+    }
+  });
+
+  return { validUsers, invalidUsers };
 }
 
 /**
@@ -78,14 +110,21 @@ function extractRankingCategories(users) {
 }
 
 /**
- * Configures the ranking select control.
+ * Configures ranking select.
  *
- * @param {string[]} categories
+ * @param {Object[]} users
  */
-function configureSelect(categories) {
+function configureSelect(users) {
   const select = document.querySelector("#ranking-select");
   select.innerHTML = "";
   select.disabled = false;
+
+  const categories = new Set(["overall"]);
+
+  users.forEach((user) => {
+    const languages = user.ranks?.languages ?? {};
+    Object.keys(languages).forEach((language) => categories.add(language));
+  });
 
   categories.forEach((category) => {
     const option = document.createElement("option");
@@ -94,13 +133,9 @@ function configureSelect(categories) {
     select.appendChild(option);
   });
 
-  select.addEventListener("change", async (event) => {
-    const selected = event.target.value;
-    const input = document.querySelector("#usernames");
-    const usernames = extractUsernames(input.value);
-    const users = await fetchUsers(usernames);
-    renderTable(users, selected);
-  });
+  select.onchange = (event) => {
+    renderTable(users, event.target.value);
+  };
 }
 
 /**
@@ -119,7 +154,7 @@ function renderTable(users, rankingType) {
       clan: user.clan ?? "",
       score: getScore(user, rankingType),
     }))
-    .filter((u) => u.score !== null)
+    .filter((user) => user.score !== null)
     .sort((a, b) => b.score - a.score);
 
   ranked.forEach((user) => {
@@ -148,6 +183,14 @@ function getScore(user, rankingType) {
   }
 
   return user.ranks?.languages?.[rankingType]?.score ?? null;
+}
+
+function showError(message) {
+  document.querySelector("#error-message").textContent = message;
+}
+
+function clearError() {
+  document.querySelector("#error-message").textContent = "";
 }
 
 document.addEventListener("DOMContentLoaded", () => {
